@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.4</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.lexisnexis.cts</groupId>
+    <artifactId>content-transformation-service</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Content Transformation Service</name>
+    <description>XML-to-JSON Content Transformation Service for legal documents</description>
+
+    <modules>
+        <module>task1-core</module>
+        <module>task2-batch</module>
+        <module>task3-deployment</module>
+    </modules>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <saxon-he.version>12.4</saxon-he.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Internal modules -->
+            <dependency>
+                <groupId>com.lexisnexis.cts</groupId>
+                <artifactId>task1-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lexisnexis.cts</groupId>
+                <artifactId>task2-batch</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Saxon-HE for XSLT 3.0 -->
+            <dependency>
+                <groupId>net.sf.saxon</groupId>
+                <artifactId>Saxon-HE</artifactId>
+                <version>${saxon-he.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

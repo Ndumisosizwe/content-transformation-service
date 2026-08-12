@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: content-transformation-service
+
+server:
+  port: 8080
+
+# Content Transformation Service configuration
+cts:
+  output:
+    path: ${CTS_OUTPUT_PATH:./output}
+  processing:
+    concurrency: ${CTS_PROCESSING_CONCURRENCY:4}
+    max-file-size: ${CTS_PROCESSING_MAX_FILE_SIZE:10MB}
