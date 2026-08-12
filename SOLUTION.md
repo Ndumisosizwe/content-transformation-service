@@ -164,9 +164,11 @@ The current architecture supports this evolution because:
 ## Testing Strategy
 
 - **54 unit/integration tests** covering all pipeline paths.
+- Tests are **never skipped** — they run on every `mvn clean install` to guarantee correctness.
 - Test classes per component: `XmlValidationServiceTest`, `XsltTransformationServiceTest`, `ContentIdExtractorTest`, `FileSystemArtifactStoreTest`, `DocumentProcessingServiceTest`, `DocumentControllerTest`.
 - Coverage targets: all branches (valid, invalid, malformed, duplicate, empty, wrong namespace, special characters, error handling).
 - Integration test uses `@SpringBootTest` with `MockMvc` for full REST endpoint verification.
+- Sample XML test data lives in the root `samples/` directory and is included on the test classpath via Maven `testResources` configuration (no duplication).
 
 ---
 

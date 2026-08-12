@@ -310,6 +310,16 @@ git push -u origin develop
 
 ---
 
+## Session 2 — August 12, 2026 (continued)
+
+### Interaction 31: Never Skip Tests
+
+**Prompt:** "at any moment, DO NOT skip any unit tests. even on mvn clean install. please also update all .md files after you've made sure of this"
+
+**Response:** Verified that `mvn clean install` already runs all 54 tests without any skip flags (no `skipTests` or `maven.test.skip` in any POM). The earlier `-DskipTests` was only used during initial development. Confirmed BUILD SUCCESS with all tests passing. Updated both `README.md` and `SOLUTION.md` to explicitly state that tests are never skipped and always run on every build.
+
+---
+
 ### Interaction 11: Create Root README.md
 
 **Prompt:** "okay, continue to implement the `One root-level README.md`"

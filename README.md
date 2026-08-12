@@ -43,6 +43,8 @@ content-transformation-service/
 mvn clean install
 ```
 
+This compiles all modules and runs all 54 unit/integration tests. Tests are never skipped — they run on every build to guarantee correctness.
+
 ## Run
 
 ```bash
@@ -58,6 +60,12 @@ mvn spring-boot:run -pl task3-deployment
 The service starts on port **8080** by default.
 
 ## Run Tests
+
+```bash
+mvn test
+```
+
+Tests run automatically as part of `mvn clean install` — they are never skipped. You can also run tests for a specific module:
 
 ```bash
 mvn test -pl task1-core
