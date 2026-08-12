@@ -41,4 +41,18 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <testResources>
+            <!-- Default test resources -->
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+            <!-- Root samples/ directory available on test classpath -->
+            <testResource>
+                <directory>${project.basedir}/../samples</directory>
+                <targetPath>samples</targetPath>
+            </testResource>
+        </testResources>
+    </build>
+
 </project>

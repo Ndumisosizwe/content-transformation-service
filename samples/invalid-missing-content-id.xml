@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Invalid: missing required content_id element -->
+<judgment xmlns="urn:lex:content:1">
+    <header>
+        <title>Missing content_id test</title>
+        <court>Test Court</court>
+        <jurisdiction>FR</jurisdiction>
+        <decision_date>2024-01-01</decision_date>
+    </header>
+    <body>
+        <section type="facts">
+            <p id="p1">Some text.</p>
+        </section>
+    </body>
+</judgment>

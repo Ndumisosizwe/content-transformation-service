@@ -38,7 +38,7 @@ public class XsltTransformationService {
     }
 
     @PostConstruct
-    void init() {
+    public void init() {
         try {
             // Use Saxon-HE TransformerFactory explicitly
             TransformerFactoryImpl factory = new TransformerFactoryImpl();

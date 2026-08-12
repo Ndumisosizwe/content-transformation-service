@@ -200,6 +200,98 @@ git push -u origin develop
 
 ---
 
+### Interaction 19: Local Testing Strategy
+
+**Prompt:** "let's think about an quick and easy way of testing all we've done so far? locally"
+
+**Response:** Proposed quickest approach: create a sample XML test file + a simple curl-based test script. Also can add a Spring Boot integration test. See details below.
+
+---
+
+### Interaction 20: XSD Awareness Check
+
+**Prompt:** "based off of the .PDF files, are you aware of the XML schemas to be validating against?"
+
+**Response:** Yes — the XSD is already implemented. See details below.
+
+---
+
+### Interaction 21: XSD Completeness Confirmation
+
+**Prompt:** "the schema we have, is all the .xsd we will ever need here? correct?"
+
+**Response:** Correct — confirmed below.
+
+---
+
+### Interaction 22: Sample Files & JUnit Tests
+
+**Prompt:** "Yes, please do the `samples/` directory as suggested above. with just a few samples for testing purposes. Remember we're focussed on Task1. After that, lets try and cover Task1 module with Junit Tests as cover as much as possible, by branch and by lines of code."
+
+**Response:** Created 6 sample XML files and started writing comprehensive JUnit tests. Completed XmlValidationServiceTest (9 tests) and XsltTransformationServiceTest (11 tests).
+
+---
+
+### Interaction 23: Sample Files Location
+
+**Prompt:** "how about the sample XML files are all in the resources folder? such that when we package the application at the end, all is well and ready"
+
+**Response:** Good call. Moved samples into `task1-core/src/test/resources/samples/` (for tests) and will remove the standalone `samples/` directory at the root. Test resources get packaged correctly for test execution but don't ship with the production JAR — which is exactly right. The root `samples/` folder was redundant.
+
+---
+
+### Interaction 24: No Duplication of Samples
+
+**Prompt:** "i want to say 'keep both', but i don't want duplications"
+
+**Response:** Solution: Keep one source of truth at root `samples/`, remove from test resources, and use Maven's `testResources` config to point tests at the root `samples/` directory. No duplication, both use cases served.
+
+---
+
+### Interaction 25: Confirm and Execute No-Duplication Approach
+
+**Prompt:** "yes"
+
+**Response:** Deleted all 6 duplicate files from `src/test/resources/samples/`. Added `<testResources>` config in task1-core POM to include root `samples/` directory on the test classpath at `samples/` path. Single source of truth, no duplication.
+
+---
+
+### Interaction 26: Unit Test Status Check
+
+**Prompt:** "unit tests for Task1, all is looking well? like requested above?"
+
+**Response:** We've completed 2 of 6 test classes so far. Need to continue with the remaining 4 test classes + run them. See status below.
+
+---
+
+### Interaction 27: Continue Writing Remaining Tests
+
+**Prompt:** "yes"
+
+**Response:** Wrote all 4 remaining test classes (ContentIdExtractorTest, FileSystemArtifactStoreTest, DocumentProcessingServiceTest, DocumentControllerTest). Ran tests — had to fix two issues:
+1. `init()` methods were package-private, needed to be public for cross-package test access.
+2. `DocumentControllerTest.getExistingDocument_returns200` had shared state issue (test ordering dependency).
+
+**Final result:** All 54 tests pass, BUILD SUCCESS in 12.2s.
+
+---
+
+### Interaction 28: Update SOLUTION.md and README.md
+
+**Prompt:** "update the SOLUTION.md and align it with ALL THAT WE KNOW so far, and the README.md as well"
+
+**Response:** Created `SOLUTION.md` from scratch covering: architecture overview, module structure, pipeline flow, 6 key design decisions with rationale and trade-offs, full AWS cloud deployment plan (storage, triggers, monitoring, dedup, RAG evolution), testing strategy, and limitations table. Updated `README.md` to align with current state: corrected test count (54), added sample documents table, HTTP status codes reference, env variable mapping, curl examples with response shapes, and test instructions.
+
+---
+
+### Interaction 29: Commit Message
+
+**Prompt:** "concise commit message?"
+
+**Response:** Suggested: `test: add 54 JUnit tests for task1-core, add SOLUTION.md and samples`
+
+---
+
 ### Interaction 11: Create Root README.md
 
 **Prompt:** "okay, continue to implement the `One root-level README.md`"

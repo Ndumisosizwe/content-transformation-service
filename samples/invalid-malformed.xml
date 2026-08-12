@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Malformed XML: unclosed tag -->
+<judgment xmlns="urn:lex:content:1">
+    <header>
+        <content_id>FR-2024-MALFORMED</content_id>
+        <title>Malformed test
+    </header>
+</judgment>

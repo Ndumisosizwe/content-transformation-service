@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Invalid: decision_date is not a valid xs:date -->
+<judgment xmlns="urn:lex:content:1">
+    <header>
+        <content_id>FR-2024-BAD-DATE</content_id>
+        <title>Bad date test</title>
+        <court>Test Court</court>
+        <jurisdiction>FR</jurisdiction>
+        <decision_date>not-a-date</decision_date>
+    </header>
+    <body>
+        <section type="facts">
+            <p id="p1">Some text.</p>
+        </section>
+    </body>
+</judgment>

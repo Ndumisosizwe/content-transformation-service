@@ -34,7 +34,7 @@ public class XmlValidationService {
     private Schema schema;
 
     @PostConstruct
-    void init() {
+    public void init() {
         try {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             // Disable external entity processing for security

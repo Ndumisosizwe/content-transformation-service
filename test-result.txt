@@ -1,0 +1,210 @@
+﻿[INFO] Scanning for projects...
+[INFO] Loaded 23514 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] 
+[INFO] -------------------< com.lexisnexis.cts:task1-core >--------------------
+[INFO] Building Task 1 - Core Pipeline 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Loaded 74 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ task1-core ---
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ task1-core ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ task1-core ---
+[INFO] Copying 0 resource from src\test\resources to target\test-classes
+[INFO] Copying 6 resources from ..\samples to target\test-classes\samples
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ task1-core ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 6 source files with javac [debug parameters release 17] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ task1-core ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.lexisnexis.cts.core.controller.DocumentControllerTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.4)
+
+2026-08-13T00:47:08.791+02:00  INFO 1336 --- [           main] c.l.c.c.c.DocumentControllerTest         : Starting DocumentControllerTest using Java 24.0.2 with PID 1336 (started by Ndumi in F:\DEV-tools\content-transformation-service\task1-core)
+2026-08-13T00:47:08.797+02:00  INFO 1336 --- [           main] c.l.c.c.c.DocumentControllerTest         : No active profile set, falling back to 1 default profile: "default"
+2026-08-13T00:47:10.090+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:10.605+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:10.615+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\cts-test-output12046539179409900138 (0 existing artifacts)
+2026-08-13T00:47:11.080+02:00  INFO 1336 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-08-13T00:47:11.080+02:00  INFO 1336 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-08-13T00:47:11.082+02:00  INFO 1336 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-08-13T00:47:11.136+02:00  INFO 1336 --- [           main] c.l.c.c.c.DocumentControllerTest         : Started DocumentControllerTest in 2.882 seconds (process running for 4.186)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (C:\Users\Ndumi\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.6\byte-buddy-agent-1.17.6.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+2026-08-13T00:47:11.924+02:00  INFO 1336 --- [           main] c.l.c.c.controller.DocumentController    : Received document submission (1250 bytes)
+2026-08-13T00:47:11.928+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.118+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-CA-000123 (status=PUBLISHED)
+2026-08-13T00:47:12.118+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Successfully processed and published content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.217+02:00  INFO 1336 --- [           main] c.l.c.c.controller.DocumentController    : Received document submission (502 bytes)
+2026-08-13T00:47:12.218+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-TGI-000456
+2026-08-13T00:47:12.229+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-TGI-000456 (status=PUBLISHED)
+2026-08-13T00:47:12.229+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Successfully processed and published content_id=FR-2024-TGI-000456
+2026-08-13T00:47:12.232+02:00  INFO 1336 --- [           main] c.l.c.c.controller.DocumentController    : Received document submission (502 bytes)
+2026-08-13T00:47:12.233+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-TGI-000456
+2026-08-13T00:47:12.233+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Duplicate detected for content_id=FR-2024-TGI-000456, skipping
+2026-08-13T00:47:12.251+02:00  WARN 1336 --- [           main] c.l.c.c.c.GlobalExceptionHandler         : Unsupported media type: Content-Type 'application/json' is not supported
+2026-08-13T00:47:12.264+02:00  INFO 1336 --- [           main] c.l.c.c.controller.DocumentController    : Received document submission (1250 bytes)
+2026-08-13T00:47:12.265+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.265+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Duplicate detected for content_id=FR-2024-CA-000123, skipping
+2026-08-13T00:47:12.305+02:00  WARN 1336 --- [           main] c.l.c.c.c.GlobalExceptionHandler         : Request body not readable: Required request body is missing: public org.springframework.http.ResponseEntity<com.lexisnexis.cts.core.model.ProcessingResult> com.lexisnexis.cts.core.controller.DocumentController.submitDocument(byte[])
+2026-08-13T00:47:12.319+02:00  INFO 1336 --- [           main] c.l.c.c.controller.DocumentController    : Received document submission (492 bytes)
+2026-08-13T00:47:12.320+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-BAD-DATE
+2026-08-13T00:47:12.326+02:00  WARN 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Validation failed for content_id=FR-2024-BAD-DATE with 2 issue(s)
+2026-08-13T00:47:12.331+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-BAD-DATE (status=VALIDATION_FAILED)
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.630 s -- in com.lexisnexis.cts.core.controller.DocumentControllerTest
+[INFO] Running com.lexisnexis.cts.core.service.ContentIdExtractorTest
+2026-08-13T00:47:12.440+02:00  WARN 1336 --- [           main] c.l.cts.core.service.ContentIdExtractor  : Failed to extract content_id from XML: ParseError at [row,col]:[1,1]
+Message: Content is not allowed in prolog.
+2026-08-13T00:47:12.450+02:00  WARN 1336 --- [           main] c.l.cts.core.service.ContentIdExtractor  : Failed to extract content_id from XML: ParseError at [row,col]:[1,1]
+Message: Premature end of file.
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.106 s -- in com.lexisnexis.cts.core.service.ContentIdExtractorTest
+[INFO] Running com.lexisnexis.cts.core.service.DocumentProcessingServiceTest
+2026-08-13T00:47:12.495+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:12.517+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:12.518+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-8391751978767107770 (0 existing artifacts)
+2026-08-13T00:47:12.520+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.542+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-CA-000123 (status=PUBLISHED)
+2026-08-13T00:47:12.542+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Successfully processed and published content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.563+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:12.580+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:12.581+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-11733022653516760475 (0 existing artifacts)
+2026-08-13T00:47:12.582+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-BAD-DATE
+2026-08-13T00:47:12.584+02:00  WARN 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Validation failed for content_id=FR-2024-BAD-DATE with 2 issue(s)
+2026-08-13T00:47:12.590+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-BAD-DATE (status=VALIDATION_FAILED)
+2026-08-13T00:47:12.612+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:12.630+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:12.631+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-7300149474015836172 (0 existing artifacts)
+2026-08-13T00:47:12.632+02:00  WARN 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Could not extract content_id from document
+2026-08-13T00:47:12.641+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:12.659+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:12.660+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-6959522513497855732 (0 existing artifacts)
+2026-08-13T00:47:12.661+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.680+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-CA-000123 (status=PUBLISHED)
+2026-08-13T00:47:12.681+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Successfully processed and published content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.682+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-6959522513497855732\second (0 existing artifacts)
+2026-08-13T00:47:12.684+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:12.699+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:12.700+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.722+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-CA-000123 (status=PUBLISHED)
+2026-08-13T00:47:12.722+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Successfully processed and published content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.735+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:12.752+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:12.754+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-2820211093176234001 (0 existing artifacts)
+2026-08-13T00:47:12.755+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.771+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-CA-000123 (status=PUBLISHED)
+2026-08-13T00:47:12.772+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Successfully processed and published content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.791+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:12.808+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:12.810+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-14803146395900422286 (0 existing artifacts)
+2026-08-13T00:47:12.811+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.830+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-CA-000123 (status=PUBLISHED)
+2026-08-13T00:47:12.831+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Successfully processed and published content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.831+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-TGI-000456
+2026-08-13T00:47:12.843+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-TGI-000456 (status=PUBLISHED)
+2026-08-13T00:47:12.844+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Successfully processed and published content_id=FR-2024-TGI-000456
+2026-08-13T00:47:12.871+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:12.893+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:12.895+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-11968732565211197936 (0 existing artifacts)
+2026-08-13T00:47:12.896+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.919+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-CA-000123 (status=PUBLISHED)
+2026-08-13T00:47:12.921+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Successfully processed and published content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.922+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-CA-000123
+2026-08-13T00:47:12.922+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Duplicate detected for content_id=FR-2024-CA-000123, skipping
+2026-08-13T00:47:12.941+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:12.965+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:12.966+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-7106599321630362737 (0 existing artifacts)
+2026-08-13T00:47:12.967+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-TGI-000456
+2026-08-13T00:47:12.992+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-TGI-000456 (status=PUBLISHED)
+2026-08-13T00:47:12.992+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Successfully processed and published content_id=FR-2024-TGI-000456
+2026-08-13T00:47:13.013+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:13.031+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:13.032+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-10637675345934727662 (0 existing artifacts)
+2026-08-13T00:47:13.033+02:00  INFO 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Processing document content_id=FR-2024-BAD-DATE
+2026-08-13T00:47:13.035+02:00  WARN 1336 --- [           main] c.l.c.c.s.DocumentProcessingService      : Validation failed for content_id=FR-2024-BAD-DATE with 2 issue(s)
+2026-08-13T00:47:13.043+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR-2024-BAD-DATE (status=VALIDATION_FAILED)
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.582 s -- in com.lexisnexis.cts.core.service.DocumentProcessingServiceTest
+[INFO] Running com.lexisnexis.cts.core.service.XmlValidationServiceTest
+2026-08-13T00:47:13.062+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:13.075+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:13.084+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:13.098+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:13.111+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:13.120+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:13.129+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:13.137+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+2026-08-13T00:47:13.145+02:00  INFO 1336 --- [           main] c.l.c.core.service.XmlValidationService  : XSD schema loaded successfully from classpath: schemas/judgment.xsd
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.095 s -- in com.lexisnexis.cts.core.service.XmlValidationServiceTest
+[INFO] Running com.lexisnexis.cts.core.service.XsltTransformationServiceTest
+2026-08-13T00:47:13.182+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:13.220+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:13.257+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:13.277+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:13.294+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:13.316+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:13.338+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:13.418+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+Error on line 1 column 1 
+  SXXP0003   Error reported by XML parser: Content is not allowed in prolog.
+Error 
+  SXXP0003  SXXP0003   Error reported by XML parser: Content is not allowed in prolog.
+2026-08-13T00:47:13.449+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+2026-08-13T00:47:13.472+02:00  INFO 1336 --- [           main] c.l.c.c.s.XsltTransformationService      : XSLT stylesheet compiled successfully from classpath: xslt/judgment-to-json.xsl
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.321 s -- in com.lexisnexis.cts.core.service.XsltTransformationServiceTest
+[INFO] Running com.lexisnexis.cts.core.store.FileSystemArtifactStoreTest
+2026-08-13T00:47:13.485+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-6089166609027608805 (0 existing artifacts)
+2026-08-13T00:47:13.501+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=DOC-005 (status=PUBLISHED)
+2026-08-13T00:47:13.511+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-16382559454722660302 (0 existing artifacts)
+2026-08-13T00:47:13.523+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=DOC-001 (status=PUBLISHED)
+2026-08-13T00:47:13.532+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-530656719492998346 (0 existing artifacts)
+2026-08-13T00:47:13.540+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=DOC-007 (status=VALIDATION_FAILED)
+2026-08-13T00:47:13.553+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-5844604510117876293 (0 existing artifacts)
+2026-08-13T00:47:13.565+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=DOC-002 (status=PUBLISHED)
+2026-08-13T00:47:13.580+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-15559212232784717916 (0 existing artifacts)
+2026-08-13T00:47:13.586+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-6822533667344689533 (0 existing artifacts)
+2026-08-13T00:47:13.595+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=DOC-004 (status=PUBLISHED)
+2026-08-13T00:47:13.597+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=DOC-004 (status=PUBLISHED)
+2026-08-13T00:47:13.605+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-437130573357537151 (0 existing artifacts)
+2026-08-13T00:47:13.613+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=FR/2024:CA#000 (status=PUBLISHED)
+2026-08-13T00:47:13.626+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-3004804493180816674 (0 existing artifacts)
+2026-08-13T00:47:13.632+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-1996804363636054835 (0 existing artifacts)
+2026-08-13T00:47:13.641+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=DOC-006 (status=PUBLISHED)
+2026-08-13T00:47:13.649+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-478707775728153982 (0 existing artifacts)
+2026-08-13T00:47:13.657+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=DOC-003 (status=PUBLISHED)
+2026-08-13T00:47:13.664+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-571857301438429442 (0 existing artifacts)
+2026-08-13T00:47:13.671+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Stored artifacts for content_id=DOC-008 (status=PUBLISHED)
+2026-08-13T00:47:13.677+02:00  INFO 1336 --- [           main] c.l.c.c.store.FileSystemArtifactStore    : Artifact store initialized at: C:\Users\Ndumi\AppData\Local\Temp\junit-571857301438429442 (1 existing artifacts)
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.202 s -- in com.lexisnexis.cts.core.store.FileSystemArtifactStoreTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 54, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  12.224 s
+[INFO] Finished at: 2026-08-13T00:47:13+02:00
+[INFO] ------------------------------------------------------------------------

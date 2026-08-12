@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<judgment xmlns="urn:lex:content:1">
+    <header>
+        <content_id>FR-2024-TGI-000456</content_id>
+        <title>Tribunal de grande instance de Lyon, 5 janvier 2024</title>
+        <court>TGI Lyon</court>
+        <jurisdiction>FR</jurisdiction>
+        <decision_date>2024-01-05</decision_date>
+    </header>
+    <body>
+        <section type="disposition">
+            <p id="p1">Le tribunal rejette la demande.</p>
+        </section>
+    </body>
+</judgment>

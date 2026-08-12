@@ -61,7 +61,7 @@ public class FileSystemArtifactStore implements ArtifactStore {
     }
 
     @PostConstruct
-    void init() {
+    public void init() {
         try {
             Files.createDirectories(outputPath);
             rebuildIndex();
