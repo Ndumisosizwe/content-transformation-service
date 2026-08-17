@@ -7,30 +7,23 @@
 # --- Stage 1: Build ---
 FROM eclipse-temurin:17-jdk AS builder
 
+# Install Maven
+RUN apt-get update && \
+    apt-get install -y maven && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /build
 
-# Copy Maven wrapper and POMs first for dependency caching
+# Copy all project files
 COPY pom.xml .
-COPY task1-core/pom.xml task1-core/
-COPY task2-batch/pom.xml task2-batch/
-COPY task3-deployment/pom.xml task3-deployment/
-
-# Copy Maven wrapper if present, otherwise use system Maven
-COPY .mvn .mvn
-COPY mvnw mvnw
-RUN chmod +x mvnw || true
-
-# Download dependencies (cached unless POMs change)
-RUN ./mvnw dependency:go-offline -B 2>/dev/null || mvn dependency:go-offline -B
-
-# Copy source code
-COPY task1-core/src task1-core/src
-COPY task2-batch/src task2-batch/src
-COPY task3-deployment/src task3-deployment/src
+COPY task1-core task1-core
+COPY task2-batch task2-batch
+COPY task3-deployment task3-deployment
 COPY samples samples
 
 # Build the application (tests run during build to guarantee correctness)
-RUN ./mvnw clean package -B 2>/dev/null || mvn clean package -B
+RUN mvn clean package -B
 
 # --- Stage 2: Runtime ---
 FROM eclipse-temurin:17-jre
