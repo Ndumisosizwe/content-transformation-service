@@ -1,5 +1,6 @@
 package com.lexisnexis.cts.core.controller;
 
+import com.lexisnexis.cts.core.config.CtsProperties;
 import com.lexisnexis.cts.core.model.DocumentStatus;
 import com.lexisnexis.cts.core.model.ProcessingResult;
 import com.lexisnexis.cts.core.service.DocumentProcessingService;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -27,19 +29,23 @@ public class DocumentController {
 
     private final DocumentProcessingService processingService;
     private final ArtifactStore artifactStore;
+    private final long maxFileSizeBytes;
 
     public DocumentController(DocumentProcessingService processingService,
-                              ArtifactStore artifactStore) {
+                              ArtifactStore artifactStore,
+                              CtsProperties ctsProperties) {
         this.processingService = processingService;
         this.artifactStore = artifactStore;
+        this.maxFileSizeBytes = DataSize.parse(ctsProperties.processing().maxFileSize()).toBytes();
     }
 
     @Operation(summary = "Submit a single XML document",
             description = "Validates against XSD, transforms to JSON via XSLT, and publishes artifacts keyed by content_id",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Document published successfully"),
-                    @ApiResponse(responseCode = "200", description = "Duplicate detected — already published"),
+                    @ApiResponse(responseCode = "200", description = "Duplicate detected -- already published"),
                     @ApiResponse(responseCode = "400", description = "Empty body or unreadable request"),
+                    @ApiResponse(responseCode = "413", description = "Document exceeds maximum allowed size"),
                     @ApiResponse(responseCode = "422", description = "XML validation failed"),
                     @ApiResponse(responseCode = "500", description = "Transformation or storage failure")
             })
@@ -47,6 +53,11 @@ public class DocumentController {
     public ResponseEntity<ProcessingResult> submitDocument(@RequestBody byte[] xmlContent) {
         if (xmlContent == null || xmlContent.length == 0) {
             return ResponseEntity.badRequest().build();
+        }
+
+        if (xmlContent.length > maxFileSizeBytes) {
+            log.warn("Document rejected: size {} bytes exceeds max {} bytes", xmlContent.length, maxFileSizeBytes);
+            return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).build();
         }
 
         log.info("Received document submission ({} bytes)", xmlContent.length);
@@ -81,6 +92,7 @@ public class DocumentController {
             case DUPLICATE_SKIPPED -> HttpStatus.OK;
             case VALIDATION_FAILED -> HttpStatus.UNPROCESSABLE_ENTITY;
             case TRANSFORMATION_FAILED -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case REJECTED -> HttpStatus.BAD_REQUEST;
             default -> HttpStatus.ACCEPTED;
         };
     }

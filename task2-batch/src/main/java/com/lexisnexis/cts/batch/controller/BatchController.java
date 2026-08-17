@@ -1,6 +1,8 @@
 package com.lexisnexis.cts.batch.controller;
 
 import com.lexisnexis.cts.batch.service.BatchProcessingService;
+import com.lexisnexis.cts.core.model.DocumentStatus;
+import com.lexisnexis.cts.core.model.ProcessingConstants;
 import com.lexisnexis.cts.core.model.ProcessingResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -67,8 +69,8 @@ public class BatchController {
                 log.error("Failed to read uploaded file {}: {}", file.getOriginalFilename(), e.getMessage());
                 return ResponseEntity.badRequest()
                         .body(new BatchResponse(files.size(), 0, 0,
-                                List.of(ProcessingResult.transformationFailed(
-                                        "UNKNOWN", "N/A",
+                                List.of(ProcessingResult.rejected(
+                                        ProcessingConstants.UNKNOWN_CONTENT_ID,
                                         "Failed to read file: " + file.getOriginalFilename()))));
             }
         }
@@ -83,7 +85,8 @@ public class BatchController {
 
         // Compute summary counts
         long successCount = results.stream()
-                .filter(r -> r.status().name().equals("PUBLISHED") || r.status().name().equals("DUPLICATE_SKIPPED"))
+                .filter(r -> r.status() == DocumentStatus.PUBLISHED
+                        || r.status() == DocumentStatus.DUPLICATE_SKIPPED)
                 .count();
         long failedCount = results.size() - successCount;
 

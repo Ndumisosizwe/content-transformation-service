@@ -1,6 +1,7 @@
 package com.lexisnexis.cts.batch.service;
 
 import com.lexisnexis.cts.batch.metrics.ProcessingMetricsService;
+import com.lexisnexis.cts.core.model.ProcessingConstants;
 import com.lexisnexis.cts.core.model.ProcessingResult;
 import com.lexisnexis.cts.core.service.DocumentProcessingService;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * Batch processing service that submits multiple documents for concurrent processing.
@@ -56,9 +58,16 @@ public class BatchProcessingService {
         // Submit all documents for concurrent processing
         List<CompletableFuture<ProcessingResult>> futures = new ArrayList<>(documents.size());
         for (byte[] document : documents) {
-            CompletableFuture<ProcessingResult> future = CompletableFuture.supplyAsync(
-                    () -> processAndRecord(document), batchProcessingExecutor);
-            futures.add(future);
+            try {
+                CompletableFuture<ProcessingResult> future = CompletableFuture.supplyAsync(
+                        () -> processAndRecord(document), batchProcessingExecutor);
+                futures.add(future);
+            } catch (RejectedExecutionException e) {
+                log.warn("Thread pool queue full, rejecting document submission: {}", e.getMessage());
+                futures.add(CompletableFuture.completedFuture(
+                        ProcessingResult.rejected(ProcessingConstants.UNKNOWN_CONTENT_ID,
+                                "Processing rejected: thread pool capacity exceeded")));
+            }
         }
 
         // Collect all results (preserving order)
@@ -86,7 +95,8 @@ public class BatchProcessingService {
             result = documentProcessingService.process(xmlContent);
         } catch (Exception e) {
             log.error("Unexpected error processing document in batch: {}", e.getMessage(), e);
-            result = ProcessingResult.transformationFailed("UNKNOWN", "N/A",
+            result = ProcessingResult.transformationFailed(ProcessingConstants.UNKNOWN_CONTENT_ID,
+                    ProcessingConstants.NO_HASH,
                     "Unexpected processing error: " + e.getMessage());
         }
         long docElapsed = System.currentTimeMillis() - docStart;

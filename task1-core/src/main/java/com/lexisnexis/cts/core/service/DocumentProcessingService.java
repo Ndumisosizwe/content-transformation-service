@@ -1,6 +1,7 @@
 package com.lexisnexis.cts.core.service;
 
 import com.lexisnexis.cts.core.model.NormalizedDocument;
+import com.lexisnexis.cts.core.model.ProcessingConstants;
 import com.lexisnexis.cts.core.model.ProcessingResult;
 import com.lexisnexis.cts.core.model.ValidationDiagnostic;
 import com.lexisnexis.cts.core.store.ArtifactStore;
@@ -54,7 +55,7 @@ public class DocumentProcessingService {
         String contentId = contentIdExtractor.extract(xmlContent);
         if (contentId == null || contentId.isBlank()) {
             log.warn("Could not extract content_id from document");
-            return ProcessingResult.validationFailed("UNKNOWN", contentHash,
+            return ProcessingResult.validationFailed(ProcessingConstants.UNKNOWN_CONTENT_ID, contentHash,
                     List.of(new ValidationDiagnostic(0, 0, "ERROR",
                             "Could not extract content_id from document")));
         }

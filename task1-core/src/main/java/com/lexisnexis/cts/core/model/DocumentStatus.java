@@ -10,5 +10,7 @@ public enum DocumentStatus {
     TRANSFORMING,
     TRANSFORMATION_FAILED,
     PUBLISHED,
-    DUPLICATE_SKIPPED
+    DUPLICATE_SKIPPED,
+    /** Document was rejected before processing (IO error, capacity exceeded, unreadable). */
+    REJECTED
 }

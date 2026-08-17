@@ -84,6 +84,8 @@ public class ProcessingMetricsService {
 
     /**
      * Records metrics for a completed batch processing run.
+     * Note: per-document status counters are already recorded by recordDocumentProcessed()
+     * during processing. This method only records batch-level metrics.
      *
      * @param results all results from the batch
      * @param durationMs total batch processing duration in milliseconds
@@ -91,11 +93,6 @@ public class ProcessingMetricsService {
     public void recordBatchProcessed(List<ProcessingResult> results, long durationMs) {
         batchCounter.increment();
         batchTimer.record(Duration.ofMillis(durationMs));
-
-        // Increment per-status counters for each document in the batch
-        for (ProcessingResult result : results) {
-            incrementStatusCounter(result.status());
-        }
     }
 
     private void incrementStatusCounter(DocumentStatus status) {
@@ -104,7 +101,8 @@ public class ProcessingMetricsService {
             case VALIDATION_FAILED -> validationFailedCounter.increment();
             case TRANSFORMATION_FAILED -> transformationFailedCounter.increment();
             case DUPLICATE_SKIPPED -> duplicateCounter.increment();
-            default -> { /* RECEIVED, VALIDATING, TRANSFORMING — transient states, not counted */ }
+            case REJECTED -> transformationFailedCounter.increment(); // counted alongside failures
+            default -> { /* RECEIVED, VALIDATING, TRANSFORMING -- transient states, not counted */ }
         }
     }
 }

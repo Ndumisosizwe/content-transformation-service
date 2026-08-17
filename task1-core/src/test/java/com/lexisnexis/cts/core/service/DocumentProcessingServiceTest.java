@@ -40,7 +40,7 @@ class DocumentProcessingServiceTest {
         XsltTransformationService transformationService = new XsltTransformationService(objectMapper);
         transformationService.init();
 
-        artifactStore = new FileSystemArtifactStore(tempDir.toString());
+        artifactStore = new FileSystemArtifactStore(objectMapper, tempDir.toString());
         artifactStore.init();
 
         ContentIdExtractor contentIdExtractor = new ContentIdExtractor();
@@ -150,13 +150,13 @@ class DocumentProcessingServiceTest {
         ProcessingResult result1 = processingService.process(xml);
 
         // Reset the store to allow re-processing
-        artifactStore = new FileSystemArtifactStore(tempDir.resolve("second").toString());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        artifactStore = new FileSystemArtifactStore(mapper, tempDir.resolve("second").toString());
         artifactStore.init();
         ContentIdExtractor extractor = new ContentIdExtractor();
         XmlValidationService validator = new XmlValidationService();
         validator.init();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
         XsltTransformationService transformer = new XsltTransformationService(mapper);
         transformer.init();
         DocumentProcessingService service2 = new DocumentProcessingService(

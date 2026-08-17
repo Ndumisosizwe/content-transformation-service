@@ -1,5 +1,8 @@
 package com.lexisnexis.cts.core.store;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.lexisnexis.cts.core.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,8 +28,17 @@ class FileSystemArtifactStoreTest {
 
     @BeforeEach
     void setUp() {
-        store = new FileSystemArtifactStore(tempDir.toString());
+        ObjectMapper objectMapper = createObjectMapper();
+        store = new FileSystemArtifactStore(objectMapper, tempDir.toString());
         store.init();
+    }
+
+    private ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        return mapper;
     }
 
     @Test
@@ -131,7 +143,7 @@ class FileSystemArtifactStoreTest {
         store.store(result);
 
         // Create a new store instance pointing to the same directory (simulates restart)
-        FileSystemArtifactStore newStore = new FileSystemArtifactStore(tempDir.toString());
+        FileSystemArtifactStore newStore = new FileSystemArtifactStore(createObjectMapper(), tempDir.toString());
         newStore.init();
 
         // Should find the previously stored result via rebuilt index

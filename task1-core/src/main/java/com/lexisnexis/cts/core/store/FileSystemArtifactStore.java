@@ -1,8 +1,6 @@
 package com.lexisnexis.cts.core.store;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.lexisnexis.cts.core.model.ProcessingResult;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -52,12 +50,10 @@ public class FileSystemArtifactStore implements ArtifactStore {
     private final ConcurrentMap<String, String> hashIndex = new ConcurrentHashMap<>();
 
     public FileSystemArtifactStore(
+            ObjectMapper objectMapper,
             @Value("${cts.output.path:./output}") String outputPath) {
         this.outputPath = Path.of(outputPath);
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
-        this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        this.objectMapper = objectMapper;
     }
 
     @PostConstruct
@@ -77,10 +73,17 @@ public class FileSystemArtifactStore implements ArtifactStore {
         String contentId = result.contentId();
         String contentHash = result.contentHash();
 
-        // Check for duplicate
-        if (exists(contentId, contentHash)) {
-            log.debug("Duplicate detected for content_id={}, hash={} — skipping", contentId, contentHash);
+        // Atomic check-and-set using putIfAbsent to prevent TOCTOU race condition.
+        // If a hash already exists for this content_id, check if it matches.
+        String existingHash = hashIndex.putIfAbsent(contentId, contentHash);
+        if (existingHash != null && existingHash.equals(contentHash)) {
+            log.debug("Duplicate detected for content_id={}, hash={} -- skipping", contentId, contentHash);
             return false;
+        }
+
+        // If existingHash != null but different, this is an update -- overwrite
+        if (existingHash != null) {
+            hashIndex.put(contentId, contentHash);
         }
 
         try {
@@ -99,12 +102,11 @@ public class FileSystemArtifactStore implements ArtifactStore {
                 Files.writeString(artifactDir.resolve(PLAIN_TEXT_FILE), result.plainText());
             }
 
-            // Update the in-memory index
-            hashIndex.put(contentId, contentHash);
-
             log.info("Stored artifacts for content_id={} (status={})", contentId, result.status());
             return true;
         } catch (IOException e) {
+            // Roll back the index entry on write failure
+            hashIndex.remove(contentId, contentHash);
             log.error("Failed to store artifacts for content_id={}", contentId, e);
             throw new StoreException("Failed to write artifacts for: " + contentId, e);
         }

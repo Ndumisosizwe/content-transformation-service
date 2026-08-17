@@ -4,6 +4,7 @@ import com.lexisnexis.cts.batch.metrics.ProcessingMetricsService;
 import com.lexisnexis.cts.core.model.DocumentStatus;
 import com.lexisnexis.cts.core.model.ProcessingResult;
 import com.lexisnexis.cts.core.service.DocumentProcessingService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,11 +30,12 @@ class BatchProcessingServiceTest {
     private ProcessingMetricsService metricsService;
 
     private BatchProcessingService batchProcessingService;
+    private ThreadPoolTaskExecutor executor;
 
     @BeforeEach
     void setUp() {
         // Create a real executor for testing concurrency
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
         executor.setMaxPoolSize(2);
         executor.setQueueCapacity(10);
@@ -42,6 +44,13 @@ class BatchProcessingServiceTest {
 
         batchProcessingService = new BatchProcessingService(
                 documentProcessingService, executor, metricsService);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (executor != null) {
+            executor.shutdown();
+        }
     }
 
     @Test

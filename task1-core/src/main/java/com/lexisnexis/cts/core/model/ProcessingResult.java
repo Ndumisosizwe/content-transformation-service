@@ -56,4 +56,13 @@ public record ProcessingResult(
         return new ProcessingResult(contentId, DocumentStatus.DUPLICATE_SKIPPED, null,
                 contentHash, Instant.now(), null, null);
     }
+
+    /**
+     * Factory method for a rejected document (IO error, capacity exceeded, unreadable).
+     */
+    public static ProcessingResult rejected(String contentId, String reason) {
+        var diagnostic = new ValidationDiagnostic(0, 0, "ERROR", reason);
+        return new ProcessingResult(contentId, DocumentStatus.REJECTED,
+                List.of(diagnostic), null, Instant.now(), null, null);
+    }
 }

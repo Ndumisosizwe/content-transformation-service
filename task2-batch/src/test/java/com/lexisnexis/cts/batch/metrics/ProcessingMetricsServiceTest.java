@@ -111,7 +111,7 @@ class ProcessingMetricsServiceTest {
     }
 
     @Test
-    void recordBatchProcessed_incrementsPerDocumentCounters() {
+    void recordBatchProcessed_doesNotIncrementPerDocumentCounters() {
         List<ProcessingResult> results = List.of(
                 ProcessingResult.success("ID-001", "h1", null, "t1"),
                 ProcessingResult.success("ID-002", "h2", null, "t2"),
@@ -119,13 +119,15 @@ class ProcessingMetricsServiceTest {
 
         metricsService.recordBatchProcessed(results, 200L);
 
+        // Per-document counters should NOT be incremented by recordBatchProcessed
+        // (they are handled by recordDocumentProcessed called per-document)
         Counter published = meterRegistry.find("cts.documents.processed")
                 .tag("status", "published").counter();
         Counter failed = meterRegistry.find("cts.documents.processed")
                 .tag("status", "validation_failed").counter();
 
-        assertThat(published.count()).isEqualTo(2.0);
-        assertThat(failed.count()).isEqualTo(1.0);
+        assertThat(published.count()).isEqualTo(0.0);
+        assertThat(failed.count()).isEqualTo(0.0);
     }
 
     @Test

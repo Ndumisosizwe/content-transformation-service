@@ -16,14 +16,15 @@ import org.springframework.context.annotation.Configuration;
 public class CtsConfiguration {
 
     /**
-     * Configures the Jackson ObjectMapper with Java time support
-     * and ISO-8601 date formatting.
+     * Configures the Jackson ObjectMapper with Java time support,
+     * ISO-8601 date formatting, and indented output for readability.
      */
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         return mapper;
     }
 }
