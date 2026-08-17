@@ -1,4 +1,4 @@
-# SOLUTION.md — Architecture, Design Decisions & Cloud Evolution Plan
+# SOLUTION.md -- Architecture, Design Decisions & Cloud Evolution Plan
 
 ## Overview
 
@@ -19,7 +19,7 @@ content-transformation-service/
 ├── task3-deployment/    Runnable application, Docker, externalized config
 ```
 
-Dependency flow: `task3-deployment → task2-batch → task1-core`
+Dependency flow: `task3-deployment -> task2-batch -> task1-core`
 
 - **task1-core** is a library module containing all business logic, domain models, services, and the REST API controller.
 - **task2-batch** adds operational capabilities: batch endpoints, configurable concurrency, Actuator health/readiness, and Micrometer metrics.
@@ -28,25 +28,25 @@ Dependency flow: `task3-deployment → task2-batch → task1-core`
 ### Pipeline Flow
 
 ```
-XML Input → Extract content_id (StAX)
-          → Compute SHA-256 hash
-          → Check duplicate (hash index)
-          → Validate against XSD (JAXP)
-          → Transform via XSLT 3.0 (Saxon-HE)
-          → Publish artifacts (filesystem)
-          → Return ProcessingResult
+XML Input -> Extract content_id (StAX)
+          -> Compute SHA-256 hash
+          -> Check duplicate (hash index)
+          -> Validate against XSD (JAXP)
+          -> Transform via XSLT 3.0 (Saxon-HE)
+          -> Publish artifacts (filesystem)
+          -> Return ProcessingResult
 ```
 
 ### Batch Processing Flow
 
 ```
 Multipart Upload (N files)
-  → Read all file bytes upfront
-  → Submit each to ThreadPoolTaskExecutor (CompletableFuture)
-  → Process concurrently (bounded by cts.processing.concurrency)
-  → Collect results in submission order
-  → Record per-document + batch-level metrics
-  → Return BatchResponse (total, successful, failed, results[])
+  -> Read all file bytes upfront
+  -> Submit each to ThreadPoolTaskExecutor (CompletableFuture)
+  -> Process concurrently (bounded by cts.processing.concurrency)
+  -> Collect results in submission order
+  -> Record per-document + batch-level metrics
+  -> Return BatchResponse (total, successful, failed, results[])
 ```
 
 ---
@@ -61,7 +61,7 @@ Multipart Upload (N files)
 - The assignment explicitly requires Saxon-HE and XSLT.
 - XSLT keeps transformation logic declarative and separate from application code.
 - The stylesheet can be modified/reloaded without recompiling Java.
-- Saxon-HE's compiled `Templates` object is thread-safe and cached at startup — new `Transformer` instances are created per invocation (cheap).
+- Saxon-HE's compiled `Templates` object is thread-safe and cached at startup -- new `Transformer` instances are created per invocation (cheap).
 
 **Trade-off:** XSLT is less familiar to most Java developers than manual DOM/Jackson mapping. Debugging XSLT errors requires XSLT expertise.
 
@@ -70,18 +70,18 @@ Multipart Upload (N files)
 **Decision:** Compute a SHA-256 hash of the raw XML content. Use `content_id + hash` as the dedup key.
 
 **Rationale:**
-- Same `content_id` + same hash = identical document already processed → skip (DUPLICATE_SKIPPED).
-- Same `content_id` + different hash = updated document → overwrite.
+- Same `content_id` + same hash = identical document already processed -- skip (DUPLICATE_SKIPPED).
+- Same `content_id` + different hash = updated document -- overwrite.
 - This handles the requirement to "avoid duplicate outputs on repeated submissions of the same content."
 
 **Trade-off:** SHA-256 is computed on every submission. For typical legal documents (tens of KB), this is negligible (<1ms). For very large documents, this is still O(n) but bounded.
 
 ### 3. Filesystem Artifact Store with In-Memory Hash Index
 
-**Decision:** Store artifacts as files on disk, keyed by sanitized `content_id`. Maintain a `ConcurrentHashMap` of `content_id → hash` for fast duplicate detection.
+**Decision:** Store artifacts as files on disk, keyed by sanitized `content_id`. Maintain a `ConcurrentHashMap` of `content_id -> hash` for fast duplicate detection.
 
 **Rationale:**
-- Simple to demo, inspect, and debug — artifacts are plain JSON/text files.
+- Simple to demo, inspect, and debug -- artifacts are plain JSON/text files.
 - The in-memory index allows O(1) duplicate checks without hitting the filesystem.
 - The index is rebuilt on startup by scanning existing artifacts (crash recovery).
 - The `ArtifactStore` interface makes it trivial to swap in S3, Blob Storage, or a database later.
@@ -94,7 +94,7 @@ Multipart Upload (N files)
 
 **Rationale:**
 - We need the `content_id` early in the pipeline for dedup checks and error reporting.
-- StAX is memory-efficient — it doesn't load the entire DOM.
+- StAX is memory-efficient -- it doesn't load the entire DOM.
 - It reads only until `<content_id>` is found, then stops.
 
 ### 5. Validation Before Transformation
@@ -120,7 +120,7 @@ Multipart Upload (N files)
 **Decision:** Use a `ThreadPoolTaskExecutor` with core and max pool size both set to `cts.processing.concurrency` (default 4).
 
 **Rationale:**
-- Fixed pool gives predictable resource usage — no unbounded thread creation under load.
+- Fixed pool gives predictable resource usage -- no unbounded thread creation under load.
 - Bounded queue (capacity 100) prevents memory exhaustion from large batch submissions.
 - The pool is configurable via environment variable for tuning per deployment.
 - `CompletableFuture.supplyAsync` + the executor gives clean concurrent processing with fault isolation per document.
@@ -139,11 +139,11 @@ Multipart Upload (N files)
 
 ### 9. Multi-Stage Docker Build
 
-**Decision:** Two-stage Dockerfile — JDK 17 for build, JRE 17 for runtime.
+**Decision:** Two-stage Dockerfile -- JDK 17 for build, JRE 17 for runtime.
 
 **Rationale:**
 - Build stage uses full JDK + Maven for compilation and testing.
-- Runtime stage uses slim JRE — smaller image (~300MB vs ~700MB), reduced attack surface.
+- Runtime stage uses slim JRE -- smaller image (~300MB vs ~700MB), reduced attack surface.
 - Dependency caching layer (POMs copied first) speeds up rebuilds when only source changes.
 - Non-root user (`cts`) for container security.
 - JVM container-aware flags (`UseContainerSupport`, `MaxRAMPercentage=75%`) for proper memory behavior.
@@ -207,7 +207,7 @@ All configuration is injectable via environment variables:
 
 ### How to Trigger Processing at Volume
 
-1. **S3 Event Notifications** → SQS queue when new XML lands in the input bucket.
+1. **S3 Event Notifications** -- SQS queue when new XML lands in the input bucket.
 2. **ECS/Fargate tasks** poll SQS, process documents, write to output bucket.
 3. **Auto-scaling** based on SQS queue depth (ApproximateNumberOfMessagesVisible).
 4. For initial bulk loads: Step Functions orchestrating parallel Fargate tasks with configurable concurrency.
@@ -225,7 +225,7 @@ All configuration is injectable via environment variables:
 ### How to Prevent Duplicate Publishing
 
 1. **DynamoDB conditional write:** Before publishing, perform a `PutItem` with `ConditionExpression: attribute_not_exists(content_hash) OR content_hash <> :hash`.
-2. **S3 object naming:** Key output objects as `{content_id}/{hash}/normalized.json` — naturally deduplicates identical content.
+2. **S3 object naming:** Key output objects as `{content_id}/{hash}/normalized.json` -- naturally deduplicates identical content.
 3. **SQS deduplication:** Use FIFO queue with `MessageDeduplicationId = SHA-256(content)` for exactly-once processing within the 5-minute dedup window.
 
 ### How to Evolve for RAG Pipeline
@@ -253,7 +253,7 @@ The current architecture supports this evolution because:
 ## Testing Strategy
 
 - **81 unit/integration tests** covering all pipeline paths across 2 modules.
-- Tests are **never skipped** — they run on every `mvn clean install` and inside the Docker build to guarantee correctness.
+- Tests are **never skipped** -- they run on every `mvn clean install` and inside the Docker build to guarantee correctness.
 
 ### task1-core (54 tests)
 

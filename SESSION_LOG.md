@@ -1,10 +1,10 @@
-# Content Transformation Service — Session Log
+# Content Transformation Service -- Session Log
 
 This file tracks all interactions, decisions, and progress across sessions.
 
 ---
 
-## Session 1 — August 12, 2026
+## Session 1 -- August 12, 2026
 
 ### Interaction 1: Project Introduction
 
@@ -16,11 +16,11 @@ This file tracks all interactions, decisions, and progress across sessions.
 
 ### Interaction 2: Assignment PDF Upload & Analysis
 
-**Prompt:** Uploaded the Senior Java Engineer Technical Vetting Assignment PDF. Requested a Maven-based Spring Boot project with Java 17 and 3 modules (Task1, Task2, Task3). Asked NOT to implement yet — just analyze and discuss.
+**Prompt:** Uploaded the Senior Java Engineer Technical Vetting Assignment PDF. Requested a Maven-based Spring Boot project with Java 17 and 3 modules (Task1, Task2, Task3). Asked NOT to implement yet -- just analyze and discuss.
 
 **Response:** Full breakdown of the assignment:
 - **Context:** LexisNexis XML-to-JSON Content Transformation Service for French legal documents.
-- **Task 1:** Ingest → Validate (XSD) → Transform (XSLT/Saxon-HE) → Publish. REST API, idempotent by content_id.
+- **Task 1:** Ingest -> Validate (XSD) -> Transform (XSLT/Saxon-HE) -> Publish. REST API, idempotent by content_id.
 - **Task 2:** Batch processing, configurable concurrency, health/readiness endpoints, metrics, memory efficiency.
 - **Task 3:** Containerize, externalize config, SOLUTION.md with cloud design (AWS/Azure/GCP).
 - **Deliverables:** GitHub repo with source, README.md, SOLUTION.md, plus a 5-10 min video demo.
@@ -34,7 +34,7 @@ Raised 5 discussion points: module dependency, cloud choice, storage approach, A
 **Prompt:** "how do you think we should approach this based on everything i've told you?"
 
 **Response:** Proposed architecture:
-- **Module structure:** `task1-core` ← `task2-batch` ← `task3-deployment` (layered dependency)
+- **Module structure:** `task1-core` <- `task2-batch` <- `task3-deployment` (layered dependency)
 - **Task1** = core library (pipeline logic, REST API, domain model, XSD/XSLT resources, artifact store interface)
 - **Task2** = batch orchestration, thread pool, Actuator/Micrometer metrics
 - **Task3** = runnable Spring Boot app, Dockerfile, externalized config, SOLUTION.md
@@ -58,16 +58,16 @@ Raised 5 discussion points: module dependency, cloud choice, storage approach, A
 **Response:** Created the full Maven multi-module skeleton:
 
 **Files created:**
-- `pom.xml` — Parent POM (Spring Boot 3.3.0 parent, Java 17, Saxon-HE 12.4, module declarations)
-- `task1-core/pom.xml` — Dependencies: spring-boot-starter-web, Saxon-HE, jackson-databind
+- `pom.xml` -- Parent POM (Spring Boot 3.3.0 parent, Java 17, Saxon-HE 12.4, module declarations)
+- `task1-core/pom.xml` -- Dependencies: spring-boot-starter-web, Saxon-HE, jackson-databind
 - `task1-core/src/main/java/com/lexisnexis/cts/core/package-info.java`
-- `task2-batch/pom.xml` — Dependencies: task1-core, spring-boot-starter-actuator, micrometer-registry-prometheus
+- `task2-batch/pom.xml` -- Dependencies: task1-core, spring-boot-starter-actuator, micrometer-registry-prometheus
 - `task2-batch/src/main/java/com/lexisnexis/cts/batch/package-info.java`
-- `task3-deployment/pom.xml` — Dependencies: task2-batch, spring-boot-maven-plugin
+- `task3-deployment/pom.xml` -- Dependencies: task2-batch, spring-boot-maven-plugin
 - `task3-deployment/src/main/java/com/lexisnexis/cts/ContentTransformationServiceApplication.java`
 - `task3-deployment/src/main/resources/application.yml`
 
-**Build result:** `BUILD SUCCESS` — all 4 modules in 7.5 seconds.
+**Build result:** `BUILD SUCCESS` -- all 4 modules in 7.5 seconds.
 
 ---
 
@@ -83,8 +83,8 @@ Raised 5 discussion points: module dependency, cloud choice, storage approach, A
 
 **Prompt:** "will you be able to remember where we left off? if i shutdown this session and shutdown my machine?"
 
-**Response:** Honest no — each session starts fresh. Workaround:
-1. This `SESSION_LOG.md` file — reference it at the start of a new session.
+**Response:** Honest no -- each session starts fresh. Workaround:
+1. This `SESSION_LOG.md` file -- reference it at the start of a new session.
 2. The codebase itself provides context.
 3. A brief verbal prompt from the user is enough to orient.
 
@@ -94,7 +94,7 @@ Raised 5 discussion points: module dependency, cloud choice, storage approach, A
 
 **Prompt:** "keep updating the SESSION_LOG file as we go. Now i need you to use the latest spring-boot version supporting Java 17"
 
-**Response:** Researched latest versions. Upgraded parent POM from Spring Boot 3.3.0 → **3.5.4** (latest release, still requires Java 17 as baseline). Build verified successfully.
+**Response:** Researched latest versions. Upgraded parent POM from Spring Boot 3.3.0 -> **3.5.4** (latest release, still requires Java 17 as baseline). Build verified successfully.
 
 ---
 
@@ -117,7 +117,7 @@ Raised 5 discussion points: module dependency, cloud choice, storage approach, A
 
 **Prompt:** "still keeping track and updating the SESSION log file? correct?"
 
-**Response:** Yes — updated the log with all recent interactions.
+**Response:** Yes -- updated the log with all recent interactions.
 
 ---
 
@@ -173,7 +173,7 @@ Raised 5 discussion points: module dependency, cloud choice, storage approach, A
 
 **Prompt:** "our session file is still up to date?"
 
-**Response:** Yes — confirmed up to date through interaction 16.
+**Response:** Yes -- confirmed up to date through interaction 16.
 
 ---
 
@@ -189,7 +189,7 @@ Raised 5 discussion points: module dependency, cloud choice, storage approach, A
 
 **Prompt:** "i like this, do a commit and push with this one. The default/HEAD branch should be `develop`"
 
-**Response:** Renamed branch from `main` to `develop`, staged all files with `git add -A` (successful with CRLF warnings). Commit command had terminal echo issues — unclear if it succeeded. User cancelled due to repeated terminal output problems.
+**Response:** Renamed branch from `main` to `develop`, staged all files with `git add -A` (successful with CRLF warnings). Commit command had terminal echo issues -- unclear if it succeeded. User cancelled due to repeated terminal output problems.
 
 **Status:** Branch is `develop`. Files are staged. Commit may or may not have gone through. Push not attempted. User should manually run:
 ```bash
@@ -212,7 +212,7 @@ git push -u origin develop
 
 **Prompt:** "based off of the .PDF files, are you aware of the XML schemas to be validating against?"
 
-**Response:** Yes — the XSD is already implemented. See details below.
+**Response:** Yes -- the XSD is already implemented. See details below.
 
 ---
 
@@ -220,7 +220,7 @@ git push -u origin develop
 
 **Prompt:** "the schema we have, is all the .xsd we will ever need here? correct?"
 
-**Response:** Correct — confirmed below.
+**Response:** Correct -- confirmed below.
 
 ---
 
@@ -236,7 +236,7 @@ git push -u origin develop
 
 **Prompt:** "how about the sample XML files are all in the resources folder? such that when we package the application at the end, all is well and ready"
 
-**Response:** Good call. Moved samples into `task1-core/src/test/resources/samples/` (for tests) and will remove the standalone `samples/` directory at the root. Test resources get packaged correctly for test execution but don't ship with the production JAR — which is exactly right. The root `samples/` folder was redundant.
+**Response:** Good call. Moved samples into `task1-core/src/test/resources/samples/` (for tests) and will remove the standalone `samples/` directory at the root. Test resources get packaged correctly for test execution but don't ship with the production JAR -- which is exactly right. The root `samples/` folder was redundant.
 
 ---
 
@@ -268,7 +268,7 @@ git push -u origin develop
 
 **Prompt:** "yes"
 
-**Response:** Wrote all 4 remaining test classes (ContentIdExtractorTest, FileSystemArtifactStoreTest, DocumentProcessingServiceTest, DocumentControllerTest). Ran tests — had to fix two issues:
+**Response:** Wrote all 4 remaining test classes (ContentIdExtractorTest, FileSystemArtifactStoreTest, DocumentProcessingServiceTest, DocumentControllerTest). Ran tests -- had to fix two issues:
 1. `init()` methods were package-private, needed to be public for cross-package test access.
 2. `DocumentControllerTest.getExistingDocument_returns200` had shared state issue (test ordering dependency).
 
@@ -310,7 +310,7 @@ git push -u origin develop
 
 ---
 
-## Session 2 — August 12, 2026 (continued)
+## Session 2 -- August 12, 2026 (continued)
 
 ### Interaction 31: Never Skip Tests
 
@@ -341,10 +341,10 @@ git push -u origin develop
 
 **Prompt:** "cool, our main focus is strictly task1-* module. we are focussed on that. remember the goal"
 
-**Response:** Acknowledged. Focus is now strictly on **task1-core** — the core pipeline:
+**Response:** Acknowledged. Focus is now strictly on **task1-core** -- the core pipeline:
 1. Accept legal XML documents via REST API
 2. Validate against XSD
-3. Transform valid XML → normalized JSON using XSLT (Saxon-HE)
+3. Transform valid XML -> normalized JSON using XSLT (Saxon-HE)
 4. Also produce plain text for AI/RAG
 5. Publish artifacts keyed by content_id (idempotent)
 6. Provide status/output retrieval endpoint
@@ -359,7 +359,7 @@ Ready to implement.
 | # | Decision | Rationale |
 |---|----------|-----------|
 | 1 | Module names: `task1-core`, `task2-batch`, `task3-deployment` | Java naming conventions while staying recognizable to assignment structure |
-| 2 | Layered dependency: task3 → task2 → task1 | Incremental build; task3 is the runnable app |
+| 2 | Layered dependency: task3 -> task2 -> task1 | Incremental build; task3 is the runnable app |
 | 3 | Spring Boot 3.5.4, Java 17 | Latest Spring Boot supporting Java 17 |
 | 4 | Saxon-HE 12.4 | Latest stable for XSLT 3.0 |
 | 5 | AWS as cloud target | Fits LexisNexis ecosystem |
@@ -374,8 +374,8 @@ Ready to implement.
 - [x] Task 1 implementation (ingest, validate, transform, publish)
 - [x] Task 2 implementation (batch, concurrency, metrics)
 - [ ] Task 3 implementation (Dockerfile, externalized config, SOLUTION.md)
-- [x] README.md — DONE (draft, will refine at end)
-- [x] SOLUTION.md — DONE (draft, will refine at end)
+- [x] README.md -- DONE (draft, will refine at end)
+- [x] SOLUTION.md -- DONE (draft, will refine at end)
 
 ---
 
@@ -393,8 +393,8 @@ Ready to implement.
 | `model` | `Paragraph` | Record: id + section + text |
 | `model` | `Party` | Record: role + name |
 | `service` | `XmlValidationService` | Validates XML against XSD (JAXP, thread-safe Schema caching) |
-| `service` | `XsltTransformationService` | Transforms XML→JSON via Saxon-HE (compiled Templates cached) |
-| `service` | `DocumentProcessingService` | Orchestrates: extract ID → hash → dedup check → validate → transform → publish |
+| `service` | `XsltTransformationService` | Transforms XML->JSON via Saxon-HE (compiled Templates cached) |
+| `service` | `DocumentProcessingService` | Orchestrates: extract ID -> hash -> dedup check -> validate -> transform -> publish |
 | `service` | `ContentIdExtractor` | StAX-based content_id extraction (memory efficient) |
 | `store` | `ArtifactStore` | Interface: store(), findByContentId(), exists() |
 | `store` | `FileSystemArtifactStore` | Filesystem impl with ConcurrentHashMap index, directory-per-document |
@@ -411,11 +411,11 @@ Ready to implement.
 | `xslt/judgment-to-json.xsl` | XSLT 3.0 stylesheet producing normalized JSON |
 
 ### Build Status
-- `mvn clean install -DskipTests` → **BUILD SUCCESS** (all 4 modules, 14.6s)
+- `mvn clean install -DskipTests` -> **BUILD SUCCESS** (all 4 modules, 14.6s)
 
 ---
 
-## Session 3 — August 17, 2026
+## Session 3 -- August 17, 2026
 
 ### Interaction 32: Session Resume & Task 2 Start
 
@@ -429,7 +429,7 @@ Ready to implement.
 
 **Prompt:** "okay, do that. also read the README.md file you already created, ask any questions if you have to."
 
-**Response:** Read README.md, SOLUTION.md, task2-batch/pom.xml, and all task1-core service classes to understand the foundation. No questions needed — everything was well-aligned. Created task list and began implementation.
+**Response:** Read README.md, SOLUTION.md, task2-batch/pom.xml, and all task1-core service classes to understand the foundation. No questions needed -- everything was well-aligned. Created task list and began implementation.
 
 ---
 
@@ -449,7 +449,7 @@ Implemented the full task2-batch module:
 
 #### Configuration Updates:
 
-- `task3-deployment/src/main/resources/application.yml` — Added Actuator endpoint exposure (health, info, metrics, prometheus), liveness/readiness probes, multipart size limits (10MB file, 50MB request)
+- `task3-deployment/src/main/resources/application.yml` -- Added Actuator endpoint exposure (health, info, metrics, prometheus), liveness/readiness probes, multipart size limits (10MB file, 50MB request)
 
 #### Test Classes Created in `task2-batch/src/test/java/com/lexisnexis/cts/batch/`:
 
@@ -464,12 +464,12 @@ Implemented the full task2-batch module:
 **Total project tests:** 81 (54 task1-core + 27 task2-batch)
 
 #### Issues Fixed During Build:
-1. `@MockBean` → `@MockitoBean` — Spring Boot 3.4+ moved the annotation to `org.springframework.test.context.bean.override.mockito`
+1. `@MockBean` -> `@MockitoBean` -- Spring Boot 3.4+ moved the annotation to `org.springframework.test.context.bean.override.mockito`
 2. `BatchControllerTest` needed inner `@SpringBootApplication static class TestConfig` since task2-batch has no Spring Boot main class
-3. Health indicator test path on Windows — used `Z:\nonexistent\...` for truly inaccessible path
+3. Health indicator test path on Windows -- used `Z:\nonexistent\...` for truly inaccessible path
 
 #### Build Status:
-- `mvn clean install` → **BUILD SUCCESS** (all 4 modules, 81 tests pass)
+- `mvn clean install` -> **BUILD SUCCESS** (all 4 modules, 81 tests pass)
 
 ---
 
@@ -487,6 +487,6 @@ Implemented the full task2-batch module:
 
 **Next steps:**
 - [ ] Task 3 implementation (Dockerfile, externalized config refinement)
-- [ ] Final README.md update (test count → 81, batch endpoint docs)
+- [ ] Final README.md update (test count -> 81, batch endpoint docs)
 - [ ] Final SOLUTION.md update (add Task 2 details)
 - [ ] Commit and push

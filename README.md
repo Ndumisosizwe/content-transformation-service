@@ -20,7 +20,7 @@ content-transformation-service/
 ├── task2-batch/         Batch processing, concurrency, health & metrics
 ├── task3-deployment/    Runnable Spring Boot application, Docker, configuration
 ├── samples/             Example XML documents for testing and demo
-├── Dockerfile           Multi-stage build (JDK 17 build → JRE 17 runtime)
+├── Dockerfile           Multi-stage build (JDK 17 build, JRE 17 runtime)
 ├── docker-compose.yml   Local container orchestration
 ├── SOLUTION.md          Architecture, cloud design, and trade-offs
 └── README.md            This file
@@ -46,7 +46,7 @@ content-transformation-service/
 mvn clean install
 ```
 
-This compiles all modules and runs all **81 unit/integration tests**. Tests are never skipped — they run on every build to guarantee correctness.
+This compiles all modules and runs all **81 unit/integration tests**. Tests are never skipped -- they run on every build to guarantee correctness.
 
 ## Run Locally
 
@@ -101,7 +101,7 @@ docker-compose down
 mvn test
 ```
 
-Tests run automatically as part of `mvn clean install` — they are never skipped. You can also run tests for a specific module:
+Tests run automatically as part of `mvn clean install` -- they are never skipped. You can also run tests for a specific module:
 
 ```bash
 mvn test -pl task1-core
@@ -236,7 +236,7 @@ The `samples/` directory contains example XML files:
 | Status | Meaning |
 |--------|---------|
 | 201 Created | Document successfully processed and published |
-| 200 OK | Duplicate detected — same content already published (single); batch response (batch) |
+| 200 OK | Duplicate detected -- same content already published (single); batch response (batch) |
 | 400 Bad Request | Empty body, unreadable request, or no files in batch |
 | 415 Unsupported Media Type | Content-Type is not `application/xml` |
 | 422 Unprocessable Entity | XML validation failed (diagnostics included) |
@@ -256,4 +256,4 @@ See [SOLUTION.md](SOLUTION.md) for the full architecture, cloud evolution plan, 
 
 ## License
 
-Private — technical assessment submission.
+Private -- technical assessment submission.
