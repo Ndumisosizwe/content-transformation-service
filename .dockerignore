@@ -1,0 +1,39 @@
+# Build output
+**/target/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation (not needed in image build context)
+*.md
+SESSION_LOG.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Runtime output (generated at runtime, not build time)
+output/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Build log artifacts
+build_output.txt
+bl.txt
+build_log.txt

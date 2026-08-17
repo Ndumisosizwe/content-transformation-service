@@ -33,6 +33,12 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
+        <!-- SpringDoc OpenAPI / Swagger UI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

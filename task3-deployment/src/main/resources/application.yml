@@ -1,6 +1,10 @@
 spring:
   application:
     name: content-transformation-service
+  servlet:
+    multipart:
+      max-file-size: ${CTS_PROCESSING_MAX_FILE_SIZE:10MB}
+      max-request-size: ${CTS_PROCESSING_MAX_REQUEST_SIZE:50MB}
 
 server:
   port: 8080
@@ -12,3 +16,31 @@ cts:
   processing:
     concurrency: ${CTS_PROCESSING_CONCURRENCY:4}
     max-file-size: ${CTS_PROCESSING_MAX_FILE_SIZE:10MB}
+
+# Actuator configuration — health, metrics, and Prometheus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  metrics:
+    tags:
+      application: content-transformation-service
+
+# OpenAPI / Swagger UI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method

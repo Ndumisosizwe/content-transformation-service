@@ -37,6 +37,18 @@ XML Input → Extract content_id (StAX)
           → Return ProcessingResult
 ```
 
+### Batch Processing Flow
+
+```
+Multipart Upload (N files)
+  → Read all file bytes upfront
+  → Submit each to ThreadPoolTaskExecutor (CompletableFuture)
+  → Process concurrently (bounded by cts.processing.concurrency)
+  → Collect results in submission order
+  → Record per-document + batch-level metrics
+  → Return BatchResponse (total, successful, failed, results[])
+```
+
 ---
 
 ## Key Design Decisions
@@ -103,6 +115,83 @@ XML Input → Extract content_id (StAX)
 - Diagnostics are preserved for debugging.
 - The REST API returns semantically meaningful HTTP status codes (201, 200, 422, 500).
 
+### 7. Fixed-Size Thread Pool for Batch Concurrency
+
+**Decision:** Use a `ThreadPoolTaskExecutor` with core and max pool size both set to `cts.processing.concurrency` (default 4).
+
+**Rationale:**
+- Fixed pool gives predictable resource usage — no unbounded thread creation under load.
+- Bounded queue (capacity 100) prevents memory exhaustion from large batch submissions.
+- The pool is configurable via environment variable for tuning per deployment.
+- `CompletableFuture.supplyAsync` + the executor gives clean concurrent processing with fault isolation per document.
+
+**Trade-off:** Queue capacity is fixed at 100. Extremely large batches beyond pool + queue would block. In production, this would be handled by an external queue (SQS).
+
+### 8. Micrometer Metrics for Observability
+
+**Decision:** Instrument all processing paths with Micrometer counters and timers.
+
+**Rationale:**
+- `cts.documents.processed` (counter, tagged by status) gives instant visibility into success/failure rates.
+- `cts.documents.processing.duration` (timer) tracks latency per document.
+- `cts.batch.processed` and `cts.batch.duration` give batch-level throughput metrics.
+- Prometheus registry enables scraping by standard monitoring infrastructure.
+
+### 9. Multi-Stage Docker Build
+
+**Decision:** Two-stage Dockerfile — JDK 17 for build, JRE 17 for runtime.
+
+**Rationale:**
+- Build stage uses full JDK + Maven for compilation and testing.
+- Runtime stage uses slim JRE — smaller image (~300MB vs ~700MB), reduced attack surface.
+- Dependency caching layer (POMs copied first) speeds up rebuilds when only source changes.
+- Non-root user (`cts`) for container security.
+- JVM container-aware flags (`UseContainerSupport`, `MaxRAMPercentage=75%`) for proper memory behavior.
+
+---
+
+## Containerization Strategy
+
+### Dockerfile Highlights
+
+| Aspect | Choice | Rationale |
+|--------|--------|-----------|
+| Base image | `eclipse-temurin:17-jdk` (build), `eclipse-temurin:17-jre` (runtime) | Official, well-maintained, small |
+| Build tool | Maven (in-container) | Reproducible builds, no host dependency |
+| Layer caching | POMs copied before source | Dependency download cached unless POMs change |
+| Security | Non-root user `cts` | Principle of least privilege |
+| Health check | `curl` to `/actuator/health` | Native Docker health monitoring |
+| JVM tuning | `UseContainerSupport`, `MaxRAMPercentage=75%`, `G1GC` | Container-aware memory, low-pause GC |
+| Resource limits | 512MB RAM, 2 CPUs (compose) | Predictable resource usage |
+
+### Running Locally
+
+```bash
+# Option 1: Docker Compose (recommended)
+docker-compose up -d
+
+# Option 2: Plain Docker
+docker build -t content-transformation-service .
+docker run -d -p 8080:8080 --name cts content-transformation-service
+
+# Option 3: JAR directly
+mvn clean package
+java -jar task3-deployment/target/task3-deployment-1.0.0-SNAPSHOT.jar
+```
+
+### Externalized Configuration
+
+All configuration is injectable via environment variables:
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `SERVER_PORT` | HTTP port | `8080` |
+| `CTS_OUTPUT_PATH` | Artifact storage path | `./output` |
+| `CTS_PROCESSING_CONCURRENCY` | Batch thread pool size | `4` |
+| `CTS_PROCESSING_MAX_FILE_SIZE` | Max single file size | `10MB` |
+| `CTS_PROCESSING_MAX_REQUEST_SIZE` | Max batch request size | `50MB` |
+| `JAVA_OPTS` | JVM flags | Container-optimized defaults |
+
 ---
 
 ## Cloud Deployment Plan (AWS)
@@ -163,12 +252,28 @@ The current architecture supports this evolution because:
 
 ## Testing Strategy
 
-- **54 unit/integration tests** covering all pipeline paths.
-- Tests are **never skipped** — they run on every `mvn clean install` to guarantee correctness.
-- Test classes per component: `XmlValidationServiceTest`, `XsltTransformationServiceTest`, `ContentIdExtractorTest`, `FileSystemArtifactStoreTest`, `DocumentProcessingServiceTest`, `DocumentControllerTest`.
-- Coverage targets: all branches (valid, invalid, malformed, duplicate, empty, wrong namespace, special characters, error handling).
-- Integration test uses `@SpringBootTest` with `MockMvc` for full REST endpoint verification.
-- Sample XML test data lives in the root `samples/` directory and is included on the test classpath via Maven `testResources` configuration (no duplication).
+- **81 unit/integration tests** covering all pipeline paths across 2 modules.
+- Tests are **never skipped** — they run on every `mvn clean install` and inside the Docker build to guarantee correctness.
+
+### task1-core (54 tests)
+
+| Test Class | Coverage |
+|------------|----------|
+| `XmlValidationServiceTest` | Valid, invalid, malformed, wrong namespace, special chars |
+| `XsltTransformationServiceTest` | Full transformation, minimal doc, output structure |
+| `ContentIdExtractorTest` | Present, missing, malformed XML |
+| `FileSystemArtifactStoreTest` | Store, retrieve, duplicate detection, concurrent access |
+| `DocumentProcessingServiceTest` | Full pipeline: success, validation fail, transform fail, duplicate |
+| `DocumentControllerTest` | REST endpoints: submit, retrieve, error responses |
+
+### task2-batch (27 tests)
+
+| Test Class | Coverage |
+|------------|----------|
+| `BatchProcessingServiceTest` | Concurrency, error isolation, empty/null input, metrics |
+| `BatchControllerTest` | Multipart upload, mixed results, empty files, order preservation |
+| `ProcessingMetricsServiceTest` | All counter types, timers, accumulation |
+| `PipelineHealthIndicatorTest` | UP/DOWN for each component (XSD, XSLT, store) |
 
 ---
 
@@ -178,7 +283,10 @@ The current architecture supports this evolution because:
 |------------|-----|--------------------------|
 | In-memory hash index | Single-instance only | Replace with DynamoDB/Redis |
 | Filesystem artifact store | Not horizontally scalable | Replace with S3 |
-| Synchronous processing | Simpler to demo and reason about | Add SQS-driven async processing for volume |
+| Synchronous single-doc processing | Simpler to demo and reason about | Add SQS-driven async processing for volume |
+| Batch held in memory | All files read upfront | Stream from multipart for very large batches |
 | No authentication | Demo scope | Add Spring Security + API keys or OAuth2 |
 | No rate limiting | Demo scope | Add Spring Cloud Gateway or API Gateway throttling |
 | XSLT JSON output not pretty-printed | Keeps XSLT simple | Post-process with Jackson if needed |
+| Fixed thread pool queue (100) | Bounded resource usage | External queue (SQS) for production scale |
+| Docker HEALTHCHECK uses curl | Simple, universally available | Use Spring Boot's built-in container probes in K8s |

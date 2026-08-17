@@ -372,10 +372,10 @@ Ready to implement.
 - [x] Project skeleton created
 - [x] `mvn clean install` passes
 - [x] Task 1 implementation (ingest, validate, transform, publish)
-- [ ] Task 2 implementation (batch, concurrency, metrics)
+- [x] Task 2 implementation (batch, concurrency, metrics)
 - [ ] Task 3 implementation (Dockerfile, externalized config, SOLUTION.md)
-- [ ] README.md — DONE (draft, will refine at end)
-- [ ] SOLUTION.md
+- [x] README.md — DONE (draft, will refine at end)
+- [x] SOLUTION.md — DONE (draft, will refine at end)
 
 ---
 
@@ -412,3 +412,81 @@ Ready to implement.
 
 ### Build Status
 - `mvn clean install -DskipTests` → **BUILD SUCCESS** (all 4 modules, 14.6s)
+
+---
+
+## Session 3 — August 17, 2026
+
+### Interaction 32: Session Resume & Task 2 Start
+
+**Prompt:** "analyze the SESSION_LOG.md, and then tell me if we're ready to move on?"
+
+**Response:** Confirmed Task 1 is complete and solid. Ready to move on to Task 2. No blockers.
+
+---
+
+### Interaction 33: Begin Task 2 Implementation
+
+**Prompt:** "okay, do that. also read the README.md file you already created, ask any questions if you have to."
+
+**Response:** Read README.md, SOLUTION.md, task2-batch/pom.xml, and all task1-core service classes to understand the foundation. No questions needed — everything was well-aligned. Created task list and began implementation.
+
+---
+
+### Interaction 34: Task 2 Complete Implementation
+
+Implemented the full task2-batch module:
+
+#### Files Created in `task2-batch/src/main/java/com/lexisnexis/cts/batch/`:
+
+| Package | Class | Purpose |
+|---------|-------|---------|
+| `config` | `BatchProcessingConfig` | `ThreadPoolTaskExecutor` bean driven by `cts.processing.concurrency` (fixed-size pool, graceful shutdown) |
+| `service` | `BatchProcessingService` | Concurrent batch processing via `CompletableFuture.supplyAsync`, fault-isolated per document, preserves input order |
+| `controller` | `BatchController` | `POST /api/v1/documents/batch` (multipart/form-data), returns `BatchResponse` with total/successful/failed counts |
+| `metrics` | `ProcessingMetricsService` | Micrometer counters (`cts.documents.processed` by status) + timers (`cts.documents.processing.duration`, `cts.batch.duration`) |
+| `health` | `PipelineHealthIndicator` | Custom `HealthIndicator`: checks XSD loaded, XSLT compiled, output directory writable |
+
+#### Configuration Updates:
+
+- `task3-deployment/src/main/resources/application.yml` — Added Actuator endpoint exposure (health, info, metrics, prometheus), liveness/readiness probes, multipart size limits (10MB file, 50MB request)
+
+#### Test Classes Created in `task2-batch/src/test/java/com/lexisnexis/cts/batch/`:
+
+| Class | Tests | Coverage |
+|-------|-------|----------|
+| `BatchProcessingServiceTest` | 7 | Concurrency, error isolation, empty/null input, metrics recording |
+| `BatchControllerTest` | 6 | Multipart upload, mixed results, empty files, order preservation, no-files 400 |
+| `ProcessingMetricsServiceTest` | 9 | All counter types, timers, accumulation, batch recording |
+| `PipelineHealthIndicatorTest` | 5 | UP/DOWN for each component (XSD, XSLT, store), detail map |
+
+**Total new tests:** 27 (task2-batch)
+**Total project tests:** 81 (54 task1-core + 27 task2-batch)
+
+#### Issues Fixed During Build:
+1. `@MockBean` → `@MockitoBean` — Spring Boot 3.4+ moved the annotation to `org.springframework.test.context.bean.override.mockito`
+2. `BatchControllerTest` needed inner `@SpringBootApplication static class TestConfig` since task2-batch has no Spring Boot main class
+3. Health indicator test path on Windows — used `Z:\nonexistent\...` for truly inaccessible path
+
+#### Build Status:
+- `mvn clean install` → **BUILD SUCCESS** (all 4 modules, 81 tests pass)
+
+---
+
+### Interaction 35: Status Check
+
+**Prompt:** "ALL IS WELL, now where to from here? lets make sure we're not missing anything"
+
+**Response:** Task 2 is fully complete. Remaining work:
+- Task 3: Dockerfile, final SOLUTION.md and README.md polish
+- Commit Task 2 work
+
+---
+
+## End of Session 3 (so far)
+
+**Next steps:**
+- [ ] Task 3 implementation (Dockerfile, externalized config refinement)
+- [ ] Final README.md update (test count → 81, batch endpoint docs)
+- [ ] Final SOLUTION.md update (add Task 2 details)
+- [ ] Commit and push
