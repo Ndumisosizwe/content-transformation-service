@@ -34,6 +34,133 @@ content-transformation-service/
 | **task2-batch** | Batch submission of multiple XML files, configurable concurrent processing (thread pool), health/readiness endpoints, Micrometer metrics (processing counts, durations, Prometheus export). |
 | **task3-deployment** | The runnable Spring Boot application. Packages everything into an executable JAR, provides externalized configuration via environment variables, and includes a Dockerfile for containerized deployment. |
 
+## Architecture
+
+### Module Dependency
+
+```
++--------------------+       +--------------------+       +--------------------+
+|  task3-deployment  | ----> |    task2-batch     | ----> |    task1-core      |
+|                    |       |                    |       |                    |
+| - Spring Boot App  |       | - BatchController  |       | - DocumentController|
+| - Dockerfile       |       | - BatchService     |       | - ProcessingService |
+| - application.yml  |       | - MetricsService   |       | - ValidationService |
+| - OpenAPI config   |       | - HealthIndicator  |       | - TransformService  |
++--------------------+       | - ThreadPool cfg   |       | - ArtifactStore     |
+                             +--------------------+       | - ContentIdExtractor|
+                                                          +--------------------+
+```
+
+### Processing Pipeline
+
+```
+                         +------------------+
+                         |   REST Request   |
+                         | (XML document)   |
+                         +--------+---------+
+                                  |
+                                  v
+                    +-------------+-------------+
+                    |  Extract content_id (StAX)|  <-- Memory efficient, streams
+                    +-------------+-------------+      until <content_id> found
+                                  |
+                                  v
+                    +-------------+-------------+
+                    |  Compute SHA-256 hash     |  <-- For idempotency
+                    +-------------+-------------+
+                                  |
+                                  v
+                    +-------------+-------------+
+                    |  Duplicate check          |  <-- ConcurrentHashMap.putIfAbsent
+                    |  (content_id + hash)      |      (atomic, no race condition)
+                    +---+------------------+----+
+                        |                  |
+                   [duplicate]        [new/updated]
+                        |                  |
+                        v                  v
+              +-------------------+  +-----+------+
+              | DUPLICATE_SKIPPED |  | Validate   |  <-- JAXP against XSD
+              | (return 200 OK)   |  | against XSD|
+              +-------------------+  +-----+------+
+                                           |
+                              +------------+------------+
+                              |                         |
+                         [valid]                   [invalid]
+                              |                         |
+                              v                         v
+                    +---------+---------+    +----------+-----------+
+                    | Transform via     |    | VALIDATION_FAILED    |
+                    | XSLT 3.0         |    | (return 422 +        |
+                    | (Saxon-HE)       |    |  diagnostics)        |
+                    +---------+---------+    +----------------------+
+                              |
+                              v
+                    +---------+---------+
+                    | Publish artifacts |
+                    | - normalized.json |
+                    | - plain_text.txt  |
+                    | - result.json     |
+                    +---------+---------+
+                              |
+                              v
+                    +---------+---------+
+                    |   PUBLISHED       |
+                    |   (return 201)    |
+                    +-------------------+
+```
+
+### Batch Processing Flow
+
+```
++---------------------+       +--------------------------+
+| POST /batch         |       |   ThreadPoolTaskExecutor |
+| (multipart files)   |       |   (fixed size, config-   |
++----------+----------+       |    driven concurrency)   |
+           |                  +-----------+--------------+
+           v                              |
++----------+----------+                   |
+| Read all file bytes |                   |
+| upfront             |                   |
++----------+----------+                   |
+           |                              |
+           v                              v
++----------+----------------------------+----+
+| CompletableFuture.supplyAsync per document |
+| (fault-isolated: one failure != batch fail)|
++----------+----------------------------+----+
+           |                              |
+           v                              v
++----------+----------+    +--------------+-----------+
+| Process doc 1       |    | Process doc 2 ... N      |
+| (full pipeline)     |    | (concurrent, bounded)    |
++----------+----------+    +--------------+-----------+
+           |                              |
+           +--------- join all -----------+
+           |
+           v
++----------+----------+
+| Record metrics      |  <-- Micrometer counters + timers
+| Return BatchResponse|      (per-doc + per-batch)
++---------------------+
+```
+
+### Observability
+
+```
++-------------------+     +-------------------+     +-------------------+
+| /actuator/health  |     | /actuator/metrics |     | /actuator/        |
+|                   |     |                   |     |   prometheus      |
+| - XSD loaded?     |     | cts.documents.    |     |                   |
+| - XSLT compiled?  |     |   processed       |     | Prometheus scrape |
+| - Store writable? |     | cts.documents.    |     | endpoint          |
+|                   |     |   processing.     |     |                   |
+| UP / DOWN         |     |   duration        |     | All metrics in    |
+|                   |     | cts.batch.        |     | exposition format  |
++-------------------+     |   processed       |     +-------------------+
+                          | cts.batch.duration|
+                          +-------------------+
+```
+
 ## Prerequisites
 
 - Java 17+ (JDK)
