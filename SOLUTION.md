@@ -28,25 +28,94 @@ Dependency flow: `task3-deployment -> task2-batch -> task1-core`
 ### Pipeline Flow
 
 ```
-XML Input -> Extract content_id (StAX)
-          -> Compute SHA-256 hash
-          -> Check duplicate (hash index)
-          -> Validate against XSD (JAXP)
-          -> Transform via XSLT 3.0 (Saxon-HE)
-          -> Publish artifacts (filesystem)
-          -> Return ProcessingResult
+                         +------------------+
+                         |   REST Request   |
+                         | (XML document)   |
+                         +--------+---------+
+                                  |
+                                  v
+                    +-------------+-------------+
+                    |  Extract content_id (StAX)|  <-- Memory efficient, streams
+                    +-------------+-------------+      until <content_id> found
+                                  |
+                                  v
+                    +-------------+-------------+
+                    |  Compute SHA-256 hash     |  <-- For idempotency
+                    +-------------+-------------+
+                                  |
+                                  v
+                    +-------------+-------------+
+                    |  Duplicate check          |  <-- ConcurrentHashMap.putIfAbsent
+                    |  (content_id + hash)      |      (atomic, no race condition)
+                    +---+------------------+----+
+                        |                  |
+                   [duplicate]        [new/updated]
+                        |                  |
+                        v                  v
+              +-------------------+  +-----+------+
+              | DUPLICATE_SKIPPED |  | Validate   |  <-- JAXP against XSD
+              | (return 200 OK)   |  | against XSD|
+              +-------------------+  +-----+------+
+                                           |
+                              +------------+------------+
+                              |                         |
+                         [valid]                   [invalid]
+                              |                         |
+                              v                         v
+                    +---------+---------+    +----------+-----------+
+                    | Transform via     |    | VALIDATION_FAILED    |
+                    | XSLT 3.0         |    | (return 422 +        |
+                    | (Saxon-HE)       |    |  diagnostics)        |
+                    +---------+---------+    +----------------------+
+                              |
+                              v
+                    +---------+---------+
+                    | Publish artifacts |
+                    | - normalized.json |
+                    | - plain_text.txt  |
+                    | - result.json     |
+                    +---------+---------+
+                              |
+                              v
+                    +---------+---------+
+                    |   PUBLISHED       |
+                    |   (return 201)    |
+                    +-------------------+
 ```
 
 ### Batch Processing Flow
 
 ```
-Multipart Upload (N files)
-  -> Read all file bytes upfront
-  -> Submit each to ThreadPoolTaskExecutor (CompletableFuture)
-  -> Process concurrently (bounded by cts.processing.concurrency)
-  -> Collect results in submission order
-  -> Record per-document + batch-level metrics
-  -> Return BatchResponse (total, successful, failed, results[])
++---------------------+       +--------------------------+
+| POST /batch         |       |   ThreadPoolTaskExecutor |
+| (multipart files)   |       |   (fixed size, config-   |
++----------+----------+       |    driven concurrency)   |
+           |                  +-----------+--------------+
+           v                              |
++----------+----------+                   |
+| Read all file bytes |                   |
+| upfront             |                   |
++----------+----------+                   |
+           |                              |
+           v                              v
++----------+----------------------------+----+
+| CompletableFuture.supplyAsync per document |
+| (fault-isolated: one failure != batch fail)|
++----------+----------------------------+----+
+           |                              |
+           v                              v
++----------+----------+    +--------------+-----------+
+| Process doc 1       |    | Process doc 2 ... N      |
+| (full pipeline)     |    | (concurrent, bounded)    |
++----------+----------+    +--------------+-----------+
+           |                              |
+           +--------- join all -----------+
+           |
+           v
++----------+----------+
+| Record metrics      |  <-- Micrometer counters + timers
+| Return BatchResponse|      (per-doc + per-batch)
++---------------------+
 ```
 
 ---
@@ -147,6 +216,25 @@ Multipart Upload (N files)
 - Dependency caching layer (POMs copied first) speeds up rebuilds when only source changes.
 - Non-root user (`cts`) for container security.
 - JVM container-aware flags (`UseContainerSupport`, `MaxRAMPercentage=75%`) for proper memory behavior.
+
+### 10. OpenAPI/Swagger with Rich Examples
+
+**Decision:** Use springdoc-openapi with `@Schema` and `@ExampleObject` annotations on all endpoints.
+
+**Rationale:**
+- Interactive API documentation at `/swagger-ui.html` enables exploration without curl.
+- Response examples show the exact JSON shape for each status (published, validation failed, batch mixed).
+- `@Schema` on record fields provides field-level descriptions and example values.
+- OpenAPI spec exportable at `/v3/api-docs` for client code generation.
+
+### 11. Atomic Duplicate Detection (putIfAbsent)
+
+**Decision:** Use `ConcurrentHashMap.putIfAbsent()` instead of separate `exists()` + `put()` for dedup in `FileSystemArtifactStore`.
+
+**Rationale:**
+- Eliminates TOCTOU (time-of-check-time-of-use) race condition under concurrent batch processing.
+- If two threads submit the same content_id simultaneously, only one wins the `putIfAbsent` -- the other sees the existing hash and short-circuits.
+- Index entry is rolled back on write failure (IOException) to prevent stale state.
 
 ---
 
