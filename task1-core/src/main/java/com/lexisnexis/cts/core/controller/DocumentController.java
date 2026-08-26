@@ -40,13 +40,75 @@ public class DocumentController {
     }
 
     @Operation(summary = "Submit a single XML document",
-            description = "Validates against XSD, transforms to JSON via XSLT, and publishes artifacts keyed by content_id",
+            description = """
+                    Validates against XSD, transforms to JSON via XSLT, and publishes artifacts keyed by content_id.
+                    
+                    **Example curl:**
+                    ```
+                    curl -X POST http://localhost:8080/api/v1/documents \\
+                      -H "Content-Type: application/xml" \\
+                      -d @samples/valid-judgment.xml
+                    ```
+                    """,
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Document published successfully"),
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Document published successfully",
+                            content = @io.swagger.v3.oas.annotations.media.Content(
+                                    mediaType = "application/json",
+                                    schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = ProcessingResult.class),
+                                    examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                            name = "Published",
+                                            summary = "Successful transformation",
+                                            value = """
+                                                    {
+                                                      "content_id": "FR-2024-CA-000123",
+                                                      "status": "PUBLISHED",
+                                                      "content_hash": "a1b2c3d4e5f6...",
+                                                      "processed_at": "2024-03-12T10:30:00Z",
+                                                      "normalized_json": {
+                                                        "content_id": "FR-2024-CA-000123",
+                                                        "title": "Cour d'appel de Paris, 12 mars 2024",
+                                                        "court": "Cour d'appel de Paris",
+                                                        "jurisdiction": "FR",
+                                                        "decision_date": "2024-03-12"
+                                                      },
+                                                      "plain_text": "Le litige porte sur..."
+                                                    }
+                                                    """
+                                    )
+                            )
+                    ),
                     @ApiResponse(responseCode = "200", description = "Duplicate detected -- already published"),
                     @ApiResponse(responseCode = "400", description = "Empty body or unreadable request"),
                     @ApiResponse(responseCode = "413", description = "Document exceeds maximum allowed size"),
-                    @ApiResponse(responseCode = "422", description = "XML validation failed"),
+                    @ApiResponse(
+                            responseCode = "422",
+                            description = "XML validation failed",
+                            content = @io.swagger.v3.oas.annotations.media.Content(
+                                    mediaType = "application/json",
+                                    examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                            name = "Validation failed",
+                                            summary = "Invalid date in document",
+                                            value = """
+                                                    {
+                                                      "content_id": "FR-2024-BAD-DATE",
+                                                      "status": "VALIDATION_FAILED",
+                                                      "content_hash": "c3d4e5f6...",
+                                                      "processed_at": "2024-03-12T10:30:00Z",
+                                                      "diagnostics": [
+                                                        {
+                                                          "line": 7,
+                                                          "column": 45,
+                                                          "severity": "ERROR",
+                                                          "message": "Value 'not-a-date' is not a valid xs:date"
+                                                        }
+                                                      ]
+                                                    }
+                                                    """
+                                    )
+                            )
+                    ),
                     @ApiResponse(responseCode = "500", description = "Transformation or storage failure")
             })
     @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,14 +131,62 @@ public class DocumentController {
     }
 
     @Operation(summary = "Retrieve document status and outputs",
-            description = "Returns the processing result for a previously submitted document",
+            description = """
+                    Returns the full processing result for a previously submitted document, \
+                    including status, normalized JSON, plain text, and any diagnostics.
+                    
+                    **Example:** `GET /api/v1/documents/FR-2024-CA-000123`
+                    """,
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Document found"),
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Document found",
+                            content = @io.swagger.v3.oas.annotations.media.Content(
+                                    mediaType = "application/json",
+                                    schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = ProcessingResult.class),
+                                    examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                            name = "Published document",
+                                            summary = "Successfully processed judgment",
+                                            value = """
+                                                    {
+                                                      "content_id": "FR-2024-CA-000123",
+                                                      "status": "PUBLISHED",
+                                                      "content_hash": "a1b2c3d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890",
+                                                      "processed_at": "2024-03-12T10:30:00Z",
+                                                      "normalized_json": {
+                                                        "content_id": "FR-2024-CA-000123",
+                                                        "title": "Cour d'appel de Paris, 12 mars 2024, n 20/01234",
+                                                        "court": "Cour d'appel de Paris",
+                                                        "jurisdiction": "FR",
+                                                        "decision_date": "2024-03-12",
+                                                        "citations": [
+                                                          {"type": "ECLI", "value": "ECLI:FR:CA12345"}
+                                                        ],
+                                                        "parties": [
+                                                          {"role": "appellant", "name": "Societe ABC"},
+                                                          {"role": "respondent", "name": "M. Dupont"}
+                                                        ],
+                                                        "paragraphs": [
+                                                          {"id": "p1", "section": "facts", "text": "Le litige porte sur..."},
+                                                          {"id": "p2", "section": "reasons", "text": "Considerant que..."},
+                                                          {"id": "p3", "section": "disposition", "text": "Par ces motifs..."}
+                                                        ],
+                                                        "full_text": "Le litige porte sur... Considerant que... Par ces motifs..."
+                                                      },
+                                                      "plain_text": "Le litige porte sur... Considerant que... Par ces motifs..."
+                                                    }
+                                                    """
+                                    )
+                            )
+                    ),
                     @ApiResponse(responseCode = "404", description = "Content ID not found")
             })
     @GetMapping(value = "/{contentId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProcessingResult> getDocument(
-            @Parameter(description = "The stable document identifier (content_id)")
+            @Parameter(
+                    description = "The stable document identifier (content_id)",
+                    example = "FR-2024-CA-000123"
+            )
             @PathVariable String contentId) {
         return artifactStore.findByContentId(contentId)
                 .map(ResponseEntity::ok)
